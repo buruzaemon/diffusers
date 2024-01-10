@@ -577,6 +577,11 @@ def parse_args(input_args=None):
         choices=["DPMSolverMultistepScheduler", "DDPMScheduler"],
         help="Select which scheduler to use for validation. DDPMScheduler is recommended for DeepFloyd IF.",
     )
+    parser.add_argument(
+        "--disable_flash_sdp",
+        action="store_true",
+        required=False, help="Set to disable flash sdp in torch's cuda backend"
+    )
 
     if input_args is not None:
         args = parser.parse_args(input_args)
@@ -601,6 +606,9 @@ def parse_args(input_args=None):
 
     if args.train_text_encoder and args.pre_compute_text_embeddings:
         raise ValueError("`--train_text_encoder` cannot be used with `--pre_compute_text_embeddings`")
+
+    if args.disable_flash_sdp:
+        torch.backends.cuda.enable_flash_sdp(False)
 
     return args
 
